@@ -36,39 +36,39 @@ draw_feathered_side_line <- function(segment_cnt, coordinate, current_pos, start
 }
 
 
-draw_side_wall <- function(length_segment_count, width_segment_count) {
+draw_side_wall <- function(width_segment_count, height_segment_count) {
   current_pos <- c(0,0)
   
   coordinate <- 1
   increase_on_full_retrace <- TRUE
   full <- TRUE
   increase_on_feather_width <- TRUE
-  current_pos <- draw_feathered_side_line(length_segment_count, coordinate, current_pos, full, increase_on_full_retrace, increase_on_feather_width)
+  current_pos <- draw_feathered_side_line(width_segment_count, coordinate, current_pos, full, increase_on_full_retrace, increase_on_feather_width)
   
   coordinate <- 2
   full <- FALSE
   increase_on_full_retrace <- FALSE
   increase_on_feather_width <- TRUE
-  current_pos <- draw_feathered_side_line(width_segment_count, coordinate, current_pos, full, increase_on_full_retrace, increase_on_feather_width)
+  current_pos <- draw_feathered_side_line(height_segment_count, coordinate, current_pos, full, increase_on_full_retrace, increase_on_feather_width)
   
   coordinate <- 1
   full <- TRUE
   increase_on_full_retrace <- FALSE
   increase_on_feather_width <- FALSE
-  current_pos <- draw_feathered_side_line(length_segment_count, coordinate, current_pos, full, increase_on_full_retrace, increase_on_feather_width)
+  current_pos <- draw_feathered_side_line(width_segment_count, coordinate, current_pos, full, increase_on_full_retrace, increase_on_feather_width)
 
   coordinate <- 2
   full <- FALSE
   increase_on_full_retrace <- TRUE
   increase_on_feather_width <- FALSE
-  current_pos <- draw_feathered_side_line(width_segment_count, coordinate, current_pos, full, increase_on_full_retrace, increase_on_feather_width)
+  current_pos <- draw_feathered_side_line(height_segment_count, coordinate, current_pos, full, increase_on_full_retrace, increase_on_feather_width)
   
 } 
 
 open.pdf <- function(title, width_in_mm, height_in_mm, margin_in_mm) {
   pdf(file=title, width=(width_in_mm + 2 * margin_in_mm) / 25.4, height=(height_in_mm + 2 * margin_in_mm) / 25.4 )   #units: inches
   plot.new()
-  par(mai=c(margin_in_mm / 25.4, margin_in_mm / 25.4, margin_in_mm / 25.4, margin_in_mm / 25.4))  #mai - margins in inces
+  par(mai=c(margin_in_mm / 25.4, margin_in_mm / 25.4, margin_in_mm / 25.4, margin_in_mm / 25.4))  #mai - margins in inches
   plot.window(c(0, width_in_mm), c(0, height_in_mm), asp=1, xaxs="i", yaxs="i")  #="i" to avoid scale by 4%
 }
 
@@ -77,7 +77,7 @@ close.pdf <- function() {
 }
 
 
-open.pdf("design_PDFs/bottom_side.pdf", bottom_height_in_feathers*feather_width_mm, case_depth_in_feathers*feather_width_mm, 10)
-draw_side_wall(bottom_height_in_feathers, case_depth_in_feathers)
+open.pdf("design_PDFs/bottom_side.pdf", case_depth_in_feathers*feather_width_mm, bottom_height_in_feathers*feather_width_mm, 10)
+draw_side_wall(case_depth_in_feathers, bottom_height_in_feathers)
 close.pdf()
 
