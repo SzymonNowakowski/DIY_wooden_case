@@ -19,49 +19,71 @@ if (case_depth_in_feathers <= 0 | case_width_in_feathers <=0 |
     bottom_height_in_feathers <= 0 | lid_height_in_feathers <= 0)
   stop("The dimensions must be positive multiplicities of the feather length")
 
-draw_feathered_side_line <- function(segment_cnt, coordinate, current_pos, starting_full, increase_on_full_retrace, increase_on_feather_width) {
+
+draw_straight_line <- function(segment_cnt, coordinate, current_pos, increase_on_first_feather_side, increase_on_feather_width, smaller_first, smaller_last) {
   new_pos <- current_pos
-  full <- starting_full
+  direction <- 1
   for (i in 1:segment_cnt) {
-    new_pos[coordinate] <- current_pos[coordinate] + (-1)^(increase_on_feather_width + 1) * feather_width_mm
-    lines(c(current_pos[1], new_pos[1]), c(current_pos[2], new_pos[2]))
-    current_pos <- new_pos
+    if ((smaller_last && i==segment_cnt) | (smaller_first && i==1)) {
+      new_pos[coordinate] <- current_pos[coordinate] + (-1)^(increase_on_feather_width + 1) * (feather_width_mm - plywood_thickness_mm)
+    } else {
+      new_pos[coordinate] <- current_pos[coordinate] + (-1)^(increase_on_feather_width + 1) * feather_width_mm
+    }
     
-    new_pos[3-coordinate] <- current_pos[3-coordinate] + (-1)^(increase_on_full_retrace + 1) * (-1)^(full + 1) * plywood_thickness_mm
     lines(c(current_pos[1], new_pos[1]), c(current_pos[2], new_pos[2]))
     current_pos <- new_pos
-    full <- !full
   }
+  
+  #and a final go up or down as if it were a one large feather
+  new_pos[3-coordinate] <- current_pos[3-coordinate] + (-1)^(increase_on_first_feather_side + direction) * plywood_thickness_mm
+  lines(c(current_pos[1], new_pos[1]), c(current_pos[2], new_pos[2]))
+  current_pos <- new_pos
+  direction <- direction + 1
+  
   return(current_pos)
 }
 
 
-draw_side_wall <- function(width_segment_count, height_segment_count) {
+draw_feathered_line <- function(segment_cnt, coordinate, current_pos, increase_on_first_feather_side, increase_on_feather_width, smaller_first, smaller_last) {
+  new_pos <- current_pos
+  direction <- 1
+  for (i in 1:segment_cnt) {
+    if ((smaller_last && i==segment_cnt) | (smaller_first && i==1)) {
+      new_pos[coordinate] <- current_pos[coordinate] + (-1)^(increase_on_feather_width + 1) * (feather_width_mm - plywood_thickness_mm)
+    } else {
+      new_pos[coordinate] <- current_pos[coordinate] + (-1)^(increase_on_feather_width + 1) * feather_width_mm
+    }
+    
+    lines(c(current_pos[1], new_pos[1]), c(current_pos[2], new_pos[2]))
+    current_pos <- new_pos
+    
+    if (i==segment_cnt) 
+      return(current_pos)
+    
+    new_pos[3-coordinate] <- current_pos[3-coordinate] + (-1)^(increase_on_first_feather_side + direction) * plywood_thickness_mm
+    lines(c(current_pos[1], new_pos[1]), c(current_pos[2], new_pos[2]))
+    current_pos <- new_pos
+    direction <- direction + 1
+  }
+  return(current_pos)
+}
+
+draw_top_or_bottom_wall <- function(width_segment_count, height_segment_count) {
   current_pos <- c(0,0)
   
-  coordinate <- 1
-  increase_on_full_retrace <- TRUE
-  full <- TRUE
-  increase_on_feather_width <- TRUE
-  current_pos <- draw_feathered_side_line(width_segment_count, coordinate, current_pos, full, increase_on_full_retrace, increase_on_feather_width)
-  
-  coordinate <- 2
-  full <- FALSE
-  increase_on_full_retrace <- FALSE
-  increase_on_feather_width <- TRUE
-  current_pos <- draw_feathered_side_line(height_segment_count, coordinate, current_pos, full, increase_on_full_retrace, increase_on_feather_width)
-  
-  coordinate <- 1
-  full <- TRUE
-  increase_on_full_retrace <- FALSE
-  increase_on_feather_width <- FALSE
-  current_pos <- draw_feathered_side_line(width_segment_count, coordinate, current_pos, full, increase_on_full_retrace, increase_on_feather_width)
 
-  coordinate <- 2
-  full <- FALSE
-  increase_on_full_retrace <- TRUE
-  increase_on_feather_width <- FALSE
-  current_pos <- draw_feathered_side_line(height_segment_count, coordinate, current_pos, full, increase_on_full_retrace, increase_on_feather_width)
+} 
+
+
+
+draw_side_wall <- function(width_segment_count, height_segment_count) {
+  current_pos <- c(0,0)
+  # if the last segment is NOT A TOOTH, we should break the drawing a plywood thickness before it is finished,
+  # so the next perpendicular not-a-tooth segment can be started with a small decline
+  current_pos <- draw_straight_line(width_segment_count, 1, current_pos, increase_on_first_feather_side=TRUE, increase_on_feather_width=TRUE, smaller_first=FALSE, smaller_last=TRUE)
+  current_pos <- draw_feathered_line(height_segment_count,2, current_pos, increase_on_first_feather_side=TRUE, increase_on_feather_width=TRUE, smaller_first=TRUE, smaller_last=FALSE)
+  current_pos <- draw_feathered_line(width_segment_count, 1, current_pos, increase_on_first_feather_side=FALSE, increase_on_feather_width=FALSE, smaller_first=FALSE, smaller_last=TRUE)
+  current_pos <- draw_feathered_line(height_segment_count,2, current_pos, increase_on_first_feather_side=FALSE, increase_on_feather_width=FALSE, smaller_first=TRUE, smaller_last=FALSE)
   
 } 
 
