@@ -93,8 +93,8 @@ draw_side_wall <- function(width_segment_count, height_segment_count) {
 
 open.pdf <- function(title, width_in_mm, height_in_mm, margin_in_mm) {
   pdf(file=title, width=(width_in_mm + 2 * margin_in_mm) / 25.4, height=(height_in_mm + 2 * margin_in_mm) / 25.4 )   #units: inches
-  plot.new()
   par(mai=c(margin_in_mm / 25.4, margin_in_mm / 25.4, margin_in_mm / 25.4, margin_in_mm / 25.4))  #mai - margins in inches
+  plot.new()
   plot.window(c(0, width_in_mm), c(0, height_in_mm), asp=1, xaxs="i", yaxs="i")  #="i" to avoid scale by 4%
 }
 
@@ -111,7 +111,7 @@ open.pdf("design_PDFs/bottom_front_or_back.pdf", case_width_in_feathers*feather_
 draw_side_wall(case_width_in_feathers, bottom_height_in_feathers)
 close.pdf()
 
-open.pdf("design_PDFs/bottom_bottom_or_lid_top.pdf", case_width_in_feathers*feather_width_mm, case_depth_in_feathers*feather_width_mm, 5)
+open.pdf("design_PDFs/bottom_bottom.pdf", case_width_in_feathers*feather_width_mm, case_depth_in_feathers*feather_width_mm, 5)
 draw_top_or_bottom_wall(case_width_in_feathers, case_depth_in_feathers)
 close.pdf()
 
@@ -123,3 +123,6 @@ open.pdf("design_PDFs/lid_front_or_back.pdf", case_width_in_feathers*feather_wid
 draw_side_wall(case_width_in_feathers, lid_height_in_feathers)
 close.pdf()
 
+open.pdf("design_PDFs/lid_top.pdf", case_width_in_feathers*feather_width_mm, case_depth_in_feathers*feather_width_mm, 5)
+draw_top_or_bottom_wall(case_width_in_feathers, case_depth_in_feathers)
+close.pdf()
