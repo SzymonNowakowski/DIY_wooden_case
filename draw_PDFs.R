@@ -122,7 +122,7 @@ draw_side_wall(case_width_in_feathers, base_height_in_feathers)
 close.pdf()
 
 open.pdf("design_PDFs/base_inner_back.pdf", case_width_in_feathers*feather_width_mm, base_height_in_feathers*feather_width_mm, 10)
-draw_inner_back_wall(case_width_in_feathers, base_height_in_feathers)
+draw_inner_back(case_width_in_feathers, base_height_in_feathers)
 close.pdf()
 
 open.pdf("design_PDFs/base_bottom.pdf", case_width_in_feathers*feather_width_mm, case_depth_in_feathers*feather_width_mm, 10)
